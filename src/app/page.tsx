@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Sidebar } from "@/components/element/sidebar/sidebar";
 import { TopBar } from "@/components/element/topbar/top-bar";
-import { MarketOverview } from "@/tools/market/market-overview";
+import { Market } from "@/tools/market/market";
 type TabType = "market" | "watchlist" | "comparison" | "alerts"
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ export default function Home() {
         <main className="flex-1 overflow-auto">
           {activeTab === "market" && (
             <div className="space-y-6 p-6">
-              <MarketOverview />
+              <Market />
             </div>
           )}
         </main>

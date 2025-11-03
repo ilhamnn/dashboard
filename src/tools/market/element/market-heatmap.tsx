@@ -3,70 +3,72 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, TrendingDown } from "lucide-react"
+import { fetchCryptoHeatmap } from "@/lib/api/market-api"
+import { formatIDRPlain } from "@/lib/utils/format"
+import { CryptoHeatmapItem } from "@/tools/market/api/market"
 
-interface CryptoHeatmapItem {
-  symbol: string
-  name: string
-  price: string
-  change24h: number
-  marketCap: string
-}
-
-const formatIDR = (value: number) => {
-  return `IDR ${new Intl.NumberFormat("id-ID", {
-    maximumFractionDigits: 0
-  }).format(value)}`
-}
-
-function getHeatmapColor(change: number) {
+// helper functions
+function getHeatmapColor(change: number): string {
   if (change > 5) return "bg-success/20"
   if (change > 0) return "bg-success/10"
   if (change > -2) return "bg-destructive/10"
   return "bg-destructive/20"
 }
 
-function getTextColor(change: number) {
+function getTextColor(change: number): string {
   return change >= 0 ? "text-success" : "text-destructive"
 }
 
 export function MarketHeatmap() {
   const [cryptoData, setCryptoData] = useState<CryptoHeatmapItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    async function fetchCryptoData() {
+    async function loadCryptoData() {
       try {
-        // Ambil 8 top coin sebagai contoh
-        const res = await fetch(
-          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&page=1&price_change_percentage=24h"
-        )
-        const data = await res.json()
+        const { coins, usdToIdr } = await fetchCryptoHeatmap(8)
 
-        // Ambil kurs USD → IDR
-        const ratesRes = await fetch("https://api.coingecko.com/api/v3/exchange_rates")
-        const ratesData = await ratesRes.json()
-        const usdToIdr = ratesData.rates.idr.value
-
-        const items: CryptoHeatmapItem[] = data.map((coin: any) => ({
+        const items: CryptoHeatmapItem[] = coins.map((coin) => ({
           symbol: coin.symbol.toUpperCase(),
           name: coin.name,
-          price: formatIDR(coin.current_price * usdToIdr),
+          price: formatIDRPlain(coin.current_price * usdToIdr),
           change24h: coin.price_change_percentage_24h,
-          marketCap: formatIDR(coin.market_cap * usdToIdr),
+          marketCap: formatIDRPlain(coin.market_cap * usdToIdr),
         }))
 
         setCryptoData(items)
       } catch (err) {
-        console.error("Failed to fetch crypto data", err)
+        setError("Failed to load crypto data")
+        console.error(err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchCryptoData()
+    loadCryptoData()
   }, [])
 
-  if (loading) return <div>Loading...</div>
+  if (loading) {
+    return (
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardDescription>Loading...</CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-foreground">Market Heatmap</CardTitle>
+          <CardDescription className="text-destructive">{error}</CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
 
   return (
     <Card className="bg-card border-border">

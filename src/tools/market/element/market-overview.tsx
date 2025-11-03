@@ -3,65 +3,70 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { MarketHeatmap } from "@/tools/market/market-heatmap"
-
-interface MarketStat {
-  label: string
-  value: string
-  change: string
-  positive: boolean
-}
+import { fetchMarketData } from "@/lib/api/market-api"
+import { formatIDR } from "@/lib/utils/format"
+import { MarketStat } from "@/tools/market/api/market"
 
 export function MarketOverview() {
   const [marketStats, setMarketStats] = useState<MarketStat[]>([])
   const [loading, setLoading] = useState(true)
-
-  const formatIDR = (value: number) =>
-    new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    async function fetchMarketData() {
+    async function loadMarketData() {
       try {
-        const resGlobal = await fetch("https://api.coingecko.com/api/v3/global")
-        const globalData = await resGlobal.json()
-
-        const resRates = await fetch("https://api.coingecko.com/api/v3/exchange_rates")
-        const ratesData = await resRates.json()
-        const usdToIdr = ratesData.rates.idr.value
+        const data = await fetchMarketData()
 
         const stats: MarketStat[] = [
           {
             label: "Market Cap",
-            value: formatIDR(globalData.data.total_market_cap.usd * usdToIdr),
-            change: `${globalData.data.market_cap_change_percentage_24h_usd.toFixed(2)}%`,
-            positive: globalData.data.market_cap_change_percentage_24h_usd >= 0,
+            value: formatIDR(data.totalMarketCapUsd * data.usdToIdr),
+            change: `${data.marketCapChange24h.toFixed(2)}%`,
+            positive: data.marketCapChange24h >= 0,
           },
           {
             label: "24h Volume",
-            value: formatIDR(globalData.data.total_volume.usd * usdToIdr),
-            change: `${((globalData.data.total_volume.usd / globalData.data.total_market_cap.usd) * 100).toFixed(2)}%`,
+            value: formatIDR(data.totalVolumeUsd * data.usdToIdr),
+            change: `${((data.totalVolumeUsd / data.totalMarketCapUsd) * 100).toFixed(2)}%`,
             positive: true,
           },
           {
             label: "BTC Dominance",
-            value: `${globalData.data.market_cap_percentage.btc.toFixed(2)}%`,
-            change: `${(globalData.data.market_cap_percentage.btc - 50).toFixed(2)}%`,
-            positive: globalData.data.market_cap_percentage.btc >= 50,
+            value: `${data.btcDominance.toFixed(2)}%`,
+            change: `${(data.btcDominance - 50).toFixed(2)}%`,
+            positive: data.btcDominance >= 50,
           },
         ]
 
         setMarketStats(stats)
       } catch (err) {
-        console.error("Failed to fetch market data", err)
+        setError("Failed to load market data")
+        console.error(err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchMarketData()
+    loadMarketData()
   }, [])
 
-  if (loading) return <div>Loading...</div>
+   if (loading) {
+    return (
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardDescription>Loading...</CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-destructive">{error}</div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
@@ -87,7 +92,6 @@ export function MarketOverview() {
           </div>
         </CardContent>
       </Card>
-      <MarketHeatmap />
     </div>
   )
 }
