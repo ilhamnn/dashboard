@@ -11,16 +11,15 @@ export interface MarketData {
   marketCapChange24h: number
   totalVolumeUsd: number
   btcDominance: number
-  usdToIdr: number
 }
 
 //heatmap
 export interface CryptoHeatmapItem {
   symbol: string
   name: string
-  price: string
+  price: number
   change24h: number
-  marketCap: string
+  marketCap: number
 }
 
 export interface CryptoMarketData {

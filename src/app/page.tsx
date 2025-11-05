@@ -4,6 +4,8 @@ import { useState } from "react"
 import { Sidebar } from "@/components/element/sidebar/sidebar";
 import { TopBar } from "@/components/element/topbar/top-bar";
 import { Market } from "@/tools/market/market";
+import { Watchlist } from "@/tools/watch/watchlist"
+import { Compare } from "@/tools/compare/compare"
 type TabType = "market" | "watchlist" | "comparison" | "alerts"
 import { cn } from "@/lib/utils";
 
@@ -30,6 +32,16 @@ export default function Home() {
           {activeTab === "market" && (
             <div className="space-y-6 p-6">
               <Market />
+            </div>
+          )}
+          {activeTab === "watchlist" && (
+            <div className="space-y-6 p-6">
+              <Watchlist />
+            </div>
+          )}
+          {activeTab === "comparison" && (
+            <div className="space-y-6 p-6">
+              <Compare />
             </div>
           )}
         </main>

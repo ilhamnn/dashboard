@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, TrendingDown } from "lucide-react"
 import { fetchMarketData } from "@/lib/api/market-api"
-import { formatIDR } from "@/lib/utils/format"
 import { MarketStat } from "@/tools/market/api/market"
 
 export function MarketOverview() {
@@ -20,13 +19,13 @@ export function MarketOverview() {
         const stats: MarketStat[] = [
           {
             label: "Market Cap",
-            value: formatIDR(data.totalMarketCapUsd * data.usdToIdr),
+            value: data.totalMarketCapUsd.toLocaleString(),
             change: `${data.marketCapChange24h.toFixed(2)}%`,
             positive: data.marketCapChange24h >= 0,
           },
           {
             label: "24h Volume",
-            value: formatIDR(data.totalVolumeUsd * data.usdToIdr),
+            value: data.totalVolumeUsd.toLocaleString(),
             change: `${((data.totalVolumeUsd / data.totalMarketCapUsd) * 100).toFixed(2)}%`,
             positive: true,
           },
@@ -50,7 +49,7 @@ export function MarketOverview() {
     loadMarketData()
   }, [])
 
-   if (loading) {
+  if (loading) {
     return (
       <Card className="bg-card border-border">
         <CardHeader>
@@ -73,7 +72,7 @@ export function MarketOverview() {
       <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-foreground">Market Overview</CardTitle>
-          <CardDescription>Global crypto metrics (IDR)</CardDescription>
+          <CardDescription>Global crypto metrics (USD)</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -81,7 +80,7 @@ export function MarketOverview() {
               <div key={idx} className="flex items-start justify-between p-3 bg-secondary rounded-lg border border-border">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
-                  <p className="text-lg font-semibold text-foreground">{stat.value}</p>
+                  <p className="text-lg font-semibold text-foreground">$ {stat.value}</p>
                 </div>
                 <div className={`flex items-center gap-1 ${stat.positive ? "text-success" : "text-destructive"}`}>
                   {stat.positive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}

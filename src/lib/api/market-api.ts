@@ -12,10 +12,8 @@ export async function fetchMarketData(): Promise<MarketData> {
   return res.json()
 }
 
-// Tambahan untuk heatmap
 export async function fetchCryptoHeatmap(limit: number = 8): Promise<{
   coins: CryptoMarketData[]
-  usdToIdr: number
 }> {
   const res = await fetch(`/api/market/heatmap?limit=${limit}`, {
     cache: "no-store"

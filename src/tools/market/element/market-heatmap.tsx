@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, TrendingDown } from "lucide-react"
 import { fetchCryptoHeatmap } from "@/lib/api/market-api"
-import { formatIDRPlain } from "@/lib/utils/format"
 import { CryptoHeatmapItem } from "@/tools/market/api/market"
 
 // helper functions
@@ -27,14 +26,14 @@ export function MarketHeatmap() {
   useEffect(() => {
     async function loadCryptoData() {
       try {
-        const { coins, usdToIdr } = await fetchCryptoHeatmap(8)
+        const { coins } = await fetchCryptoHeatmap(8)
 
         const items: CryptoHeatmapItem[] = coins.map((coin) => ({
           symbol: coin.symbol.toUpperCase(),
           name: coin.name,
-          price: formatIDRPlain(coin.current_price * usdToIdr),
+          price: coin.current_price,
           change24h: coin.price_change_percentage_24h,
-          marketCap: formatIDRPlain(coin.market_cap * usdToIdr),
+          marketCap: coin.market_cap,
         }))
 
         setCryptoData(items)
@@ -74,14 +73,14 @@ export function MarketHeatmap() {
     <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-foreground">Market Heatmap</CardTitle>
-        <CardDescription>Top cryptocurrencies by market cap - 24h performance (IDR)</CardDescription>
+        <CardDescription>Top cryptocurrencies by market cap - 24h performance</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {cryptoData.map((crypto) => (
             <div
               key={crypto.symbol}
-              className={`p-4 rounded-lg border border-border transition-all hover:border-primary cursor-pointer ${getHeatmapColor(
+              className={`p-4 rounded-lg border border-border transition-all hover:border-gray-700 cursor-pointer ${getHeatmapColor(
                 crypto.change24h,
               )}`}
             >
@@ -96,13 +95,17 @@ export function MarketHeatmap() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">{crypto.price}</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    $ {crypto.price.toLocaleString()}
+                  </p>
                   <p className={`text-xs font-medium ${getTextColor(crypto.change24h)}`}>
                     {crypto.change24h >= 0 ? "+" : ""}
                     {crypto.change24h.toFixed(2)}%
                   </p>
                 </div>
-                <p className="text-xs text-muted-foreground pt-1 border-t border-border">Cap: {crypto.marketCap}</p>
+                <p className="text-xs text-muted-foreground pt-1 border-t border-border">
+                  Cap: $ {crypto.marketCap.toLocaleString()}
+                </p>
               </div>
             </div>
           ))}

@@ -36,7 +36,7 @@ export function Sidebar({ activeTab, onTabChange, isOpen, onToggle }: SidebarPro
           {/* Header */}
           <div className={cn("p-6", !isOpen && "md:p-2 md:pt-6")}>
             <div className={cn("flex items-center gap-2 mb-8", !isOpen && "md:justify-center md:mb-6")}>
-              <div className="w-8 h-8 bg-black from-primary to-accent rounded-lg flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 bg-[#51d425] from-primary to-accent rounded-lg flex items-center justify-center shrink-0">
                 <span className="text-white font-bold text-sm">₿</span>
               </div>
               {isOpen && <span className="text-lg font-bold whitespace-nowrap">watchCryp</span>}
@@ -71,13 +71,7 @@ export function Sidebar({ activeTab, onTabChange, isOpen, onToggle }: SidebarPro
         {/* Bottom section */}
         <div className={cn("border-t border-sidebar-border", isOpen ? "p-4" : "md:p-2")}>
           {/* Market Status - only when open */}
-          {isOpen && (
-            <div className="mb-4 p-4 bg-sidebar-accent rounded-lg border border-sidebar-border">
-              <p className="text-xs text-sidebar-foreground/70">Market Status</p>
-              <p className="text-sm font-semibold text-green-400 mt-2">BTC: $45,230</p>
-              <p className="text-xs text-sidebar-foreground/70 mt-1">24h: +5.2%</p>
-            </div>
-          )}
+     
 
           {/* Toggle button - Desktop */}
           <button
