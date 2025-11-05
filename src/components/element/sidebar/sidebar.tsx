@@ -14,7 +14,7 @@ const tabs = [
   { id: "market", label: "Market", icon: TrendingUp },
   { id: "watchlist", label: "Watchlist", icon: Eye },
   { id: "comparison", label: "Compare", icon: GitCompare },
-  { id: "alerts", label: "Alerts", icon: Bell },  
+  { id: "notifications", label: "Notifications", icon: Bell },  
 ]
 
 
