@@ -1,4 +1,4 @@
-import { CompareMarket } from "@/tools/compare/api/compare"
+import { CompareMarket } from "@/tools/compare/interface/compare"
 
 export async function fetchCoins(): Promise<CompareMarket[]> {
   const res = await fetch("/api/compare", { cache: "no-store" })

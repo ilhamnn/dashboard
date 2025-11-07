@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, X, Plus } from "lucide-react"
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { fetchCoins } from "@/lib/api/compare"
-import { CompareMarket } from "@/tools/compare/api/compare"
+import { CompareMarket } from "@/tools/compare/interface/compare"
 import { formatCurrency, formatPercent } from "@/lib/utils/compare/format-compare"
 
 export function Compare() {
@@ -56,7 +56,7 @@ export function Compare() {
         <p className="text-sm text-muted-foreground">Compare up to 4 cryptocurrencies side by side</p>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-1 relative justify-center">
         {(["price", "marketCap", "volume24h"] as const).map(m => (
           <Button
             key={m}
@@ -68,7 +68,7 @@ export function Compare() {
           </Button>
         ))}
         {selected.length < 4 && availableCoins.length > 0 && (
-          <Button variant="ghost" size="sm" className="ml-auto flex gap-2" onClick={() => setShowAddModal(!showAddModal)}>
+          <Button variant="ghost" size="sm" className="ml-auto" onClick={() => setShowAddModal(!showAddModal)}>
             <Plus className="w-4 h-4" /> Add Crypto
           </Button>
         )}

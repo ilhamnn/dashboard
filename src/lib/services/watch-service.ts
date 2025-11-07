@@ -1,5 +1,5 @@
 // lib/services/market-service.ts
-import type { CoinListItem, MarketData, WatchlistItem, TimeRange } from "@/tools/watch/api/watch"
+import type { CoinListItem, MarketData, WatchlistItem, TimeRange } from "@/tools/watch/interface/watch"
 import { formatCurrency } from "@/lib/utils/watch/watch"
 
 const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
@@ -8,7 +8,7 @@ export class MarketService {
   static async fetchCoinsList(): Promise<CoinListItem[]> {
     try {
       const res = await fetch(`${COINGECKO_BASE_URL}/coins/list`, {
-        next: { revalidate: 3600 } // Cache for 1 hour
+        next: { revalidate: 3600 } 
       })
       
       if (!res.ok) {
@@ -30,14 +30,12 @@ export class MarketService {
       const res = await fetch(
         `${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=250&page=1&sparkline=true&price_change_percentage=24h,7d`,
         {
-          next: { revalidate: 60 } // Cache for 1 minute
+          next: { revalidate: 60 } 
         }
       )
-
       if (!res.ok) {
         throw new Error('Failed to fetch market data')
       }
-
       return await res.json()
     } catch (error) {
       console.error("Error fetching market data:", error)

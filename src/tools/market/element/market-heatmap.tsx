@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, TrendingDown } from "lucide-react"
 import { fetchCryptoHeatmap } from "@/lib/api/market-api"
-import { CryptoHeatmapItem } from "@/tools/market/api/market"
+import { CryptoHeatmapItem } from "@/tools/market/interface/market"
 
 // helper functions
 function getHeatmapColor(change: number): string {

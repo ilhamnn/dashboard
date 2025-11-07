@@ -1,5 +1,5 @@
 // lib/api/market-api.ts
-import type { CoinListItem, MarketData } from "@/tools/watch/api/watch"
+import type { CoinListItem, MarketData } from "@/tools/watch/interface/watch"
 
 export class MarketAPI {
   static async getCoinsList(): Promise<CoinListItem[]> {

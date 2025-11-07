@@ -1,4 +1,4 @@
-import { CompareMarket } from "@/tools/compare/api/compare"
+import { CompareMarket } from "@/tools/compare/interface/compare"
 
 export async function getTopCoins(limit = 50): Promise<CompareMarket[]> {
   try {

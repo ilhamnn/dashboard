@@ -1,4 +1,4 @@
-import { MarketData, CryptoMarketData } from "@/tools/market/api/market"
+import { MarketData, CryptoMarketData } from "@/tools/market/interface/market"
 
 export async function fetchMarketData(): Promise<MarketData> {
   const res = await fetch("/api/market/overview", {

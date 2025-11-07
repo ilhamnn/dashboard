@@ -3,76 +3,72 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, TrendingDown } from "lucide-react"
-import { fetchMarketData } from "@/lib/api/market-api"
-import { MarketStat } from "@/tools/market/interface/market"
+//import { MarketHeatmap } from "@/tools/market/market-heatmap"
+
+interface MarketStat {
+  label: string
+  value: string
+  change: string
+  positive: boolean
+}
 
 export function MarketOverview() {
   const [marketStats, setMarketStats] = useState<MarketStat[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+
+  const formatIDR = (value: number) =>
+    new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value)
 
   useEffect(() => {
-    async function loadMarketData() {
+    async function fetchMarketData() {
       try {
-        const data = await fetchMarketData()
+        const resGlobal = await fetch("https://api.coingecko.com/api/v3/global")
+        const globalData = await resGlobal.json()
+
+        const resRates = await fetch("https://api.coingecko.com/api/v3/exchange_rates")
+        const ratesData = await resRates.json()
+        const usdToIdr = ratesData.rates.idr.value
 
         const stats: MarketStat[] = [
           {
             label: "Market Cap",
-            value: data.totalMarketCapUsd.toLocaleString(),
-            change: `${data.marketCapChange24h.toFixed(2)}%`,
-            positive: data.marketCapChange24h >= 0,
+            value: formatIDR(globalData.data.total_market_cap.usd * usdToIdr),
+            change: `${globalData.data.market_cap_change_percentage_24h_usd.toFixed(2)}%`,
+            positive: globalData.data.market_cap_change_percentage_24h_usd >= 0,
           },
           {
             label: "24h Volume",
-            value: data.totalVolumeUsd.toLocaleString(),
-            change: `${((data.totalVolumeUsd / data.totalMarketCapUsd) * 100).toFixed(2)}%`,
+            value: formatIDR(globalData.data.total_volume.usd * usdToIdr),
+            change: `${((globalData.data.total_volume.usd / globalData.data.total_market_cap.usd) * 100).toFixed(2)}%`,
             positive: true,
           },
           {
             label: "BTC Dominance",
-            value: `${data.btcDominance.toFixed(2)}%`,
-            change: `${(data.btcDominance - 50).toFixed(2)}%`,
-            positive: data.btcDominance >= 50,
+            value: `${globalData.data.market_cap_percentage.btc.toFixed(2)}%`,
+            change: `${(globalData.data.market_cap_percentage.btc - 50).toFixed(2)}%`,
+            positive: globalData.data.market_cap_percentage.btc >= 50,
           },
         ]
 
         setMarketStats(stats)
       } catch (err) {
-        setError("Failed to load market data")
-        console.error(err)
+        console.error("Failed to fetch market data", err)
       } finally {
         setLoading(false)
       }
     }
 
-    loadMarketData()
+    fetchMarketData()
   }, [])
 
-  if (loading) {
-    return (
-      <Card className="bg-card border-border">
-        <CardHeader>
-          <CardDescription>Loading...</CardDescription>
-        </CardHeader>
-      </Card>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-destructive">{error}</div>
-      </div>
-    )
-  }
+  if (loading) return <div>Loading...</div>
 
   return (
     <div className="space-y-4">
       <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-foreground">Market Overview</CardTitle>
-          <CardDescription>Global crypto metrics (USD)</CardDescription>
+          <CardDescription>Global crypto metrics (IDR)</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -80,7 +76,7 @@ export function MarketOverview() {
               <div key={idx} className="flex items-start justify-between p-3 bg-secondary rounded-lg border border-border">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
-                  <p className="text-lg font-semibold text-foreground">$ {stat.value}</p>
+                  <p className="text-lg font-semibold text-foreground">{stat.value}</p>
                 </div>
                 <div className={`flex items-center gap-1 ${stat.positive ? "text-success" : "text-destructive"}`}>
                   {stat.positive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
