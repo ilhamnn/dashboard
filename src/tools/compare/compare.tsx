@@ -69,7 +69,7 @@ export function Compare() {
         ))}
         {selected.length < 4 && availableCoins.length > 0 && (
           <Button variant="ghost" size="sm" className="ml-auto" onClick={() => setShowAddModal(!showAddModal)}>
-            <Plus className="w-4 h-4" /> Add Crypto
+            <Plus className="w-4 h-4" /> Add
           </Button>
         )}
       </div>
