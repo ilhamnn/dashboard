@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Titillium_Web, Poppins } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const geistSans = Titillium_Web({
   subsets: ["latin"],
+  variable: "--font-geist-sans",
+  weight: "200",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const geistMono = Poppins({
   subsets: ["latin"],
+  variable: "--font-geist-mono",
+  weight: "200",
 });
 
 export const metadata: Metadata = {
